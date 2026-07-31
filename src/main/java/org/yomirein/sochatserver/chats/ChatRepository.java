@@ -18,10 +18,23 @@ public class ChatRepository {
     private final UserRepository userRepository = new UserRepository();
 
     public Optional<Chat> findById(Long id) {
-        String sql = "SELECT c.id,c.type,c.title,(\n" +
-                "        SELECT COUNT(*) FROM message m JOIN chat_participants p ON p.chat_id = m.chat_id WHERE p.user_id = 56 AND m.chat_id = c.id AND m.id > p.last_read_message_id ) AS unread_count \n" +
-                "FROM chat c\n" +
-                "WHERE c.id = ?;";
+        String sql = 
+            """
+            SELECT 
+              c.id,
+              c.type,
+              c.title,
+              (
+                SELECT COUNT(*) 
+                FROM message m 
+                JOIN chat_participants p ON p.chat_id = m.chat_id 
+                WHERE p.user_id = 56 
+                  AND m.chat_id = c.id 
+                  AND m.id > p.last_read_message_id
+              ) AS unread_count 
+            FROM chat c
+            WHERE c.id = ?;
+            """;
         try (Connection c = Database.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, id);
@@ -275,7 +288,14 @@ public class ChatRepository {
     }
 
     public Optional<SenderKey> findLastSenderKeyByChatAndUser(long chatId, long userId){
-        String sql = "SELECT chat_id, user_id, key_version, chat_key FROM chat_sender_keys WHERE chat_id = ? AND user_id = ? ORDER BY key_version DESC LIMIT 1";
+        String sql = 
+            """
+            SELECT chat_id, user_id, key_version, chat_key
+            FROM chat_sender_keys
+            WHERE chat_id = ? AND user_id = ?
+            ORDER BY key_version DESC
+            LIMIT 1
+            """;
 
         try (Connection c = Database.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -297,7 +317,14 @@ public class ChatRepository {
     }
 
     public List<SenderKey> findAllSenderKeyByChatAndId(long chatId, long userId) {
-        String sql = "SELECT chat_id, user_id, key_version, chat_key FROM chat_sender_keys WHERE chat_id = ? AND user_id = ? ORDER BY key_version DESC";
+        String sql =
+            """
+            SELECT chat_id, user_id, key_version, chat_key
+            FROM chat_sender_keys
+            WHERE chat_id = ? AND user_id = ?
+            ORDER BY key_version DESC
+            """;
+
         List<SenderKey> senderKeys = new ArrayList<>();
 
         try (Connection c = Database.getConnection();
