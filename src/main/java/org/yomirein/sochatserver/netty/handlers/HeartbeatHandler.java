@@ -1,19 +1,15 @@
 package org.yomirein.sochatserver.netty.handlers;
 
+import org.yomirein.sochatserver.sessions.SessionManager;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-
-import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
 import lombok.RequiredArgsConstructor;
-import org.yomirein.sochatserver.calls.CallService;
-import org.yomirein.sochatserver.calls.p2p.P2PRoom;
-import org.yomirein.sochatserver.sessions.Session;
-import org.yomirein.sochatserver.sessions.SessionManager;
 
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class HeartbeatHandler extends ChannelInboundHandlerAdapter {

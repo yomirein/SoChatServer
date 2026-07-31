@@ -1,7 +1,5 @@
 package org.yomirein.sochatserver.users;
 
-import static org.yomirein.sochatserver.utils.JsonConfig.mapUser;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+
 import org.yomirein.sochatserver.Database;
-import org.yomirein.sochatserver.messages.Message;
-import org.yomirein.sochatserver.utils.KeyParser;
+import static org.yomirein.sochatserver.utils.JsonConfig.mapUser;
 
 // UserRepository.java, as like other repositories using for talking with database
 public class UserRepository {

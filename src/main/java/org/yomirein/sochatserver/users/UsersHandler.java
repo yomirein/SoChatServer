@@ -1,18 +1,16 @@
 package org.yomirein.sochatserver.users;
 
-import io.netty.channel.ChannelHandlerContext;
-import lombok.RequiredArgsConstructor;
-import org.yomirein.sochatserver.sessions.SessionManager;
-import org.yomirein.sochatserver.common.models.MessagePacket;
-import org.yomirein.sochatserver.sessions.Session;
-import org.yomirein.sochatserver.common.repos.TrustKeysRepository;
-import org.yomirein.sochatserver.utils.JsonConfig;
-
 import java.util.Optional;
-import java.util.Set;
 
+import org.yomirein.sochatserver.common.models.MessagePacket;
+import org.yomirein.sochatserver.common.repos.TrustKeysRepository;
+import org.yomirein.sochatserver.sessions.SessionManager;
+import org.yomirein.sochatserver.utils.JsonConfig;
 import static org.yomirein.sochatserver.utils.MessageSender.notifyUser;
 import static org.yomirein.sochatserver.utils.MessageSender.sendError;
+
+import io.netty.channel.ChannelHandlerContext;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class UsersHandler {

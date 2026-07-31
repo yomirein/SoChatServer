@@ -1,21 +1,20 @@
 package org.yomirein.sochatserver.netty.codec;
 
 
+import java.util.List;
+
+import org.yomirein.sochatserver.common.models.MessagePacket;
+import static org.yomirein.sochatserver.utils.JsonConfig.MAPPER;
+
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import org.yomirein.sochatserver.common.models.MessagePacket;
-import org.yomirein.sochatserver.utils.JsonConfig;
-
-import java.util.List;
-
-import static org.yomirein.sochatserver.utils.JsonConfig.MAPPER;
 
 // Simple packet decoder that decodes all incoming data
 public class PacketDecoder extends MessageToMessageDecoder<Object> {

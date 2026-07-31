@@ -1,29 +1,38 @@
 package org.yomirein.sochatserver.media;
 
 
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.multipart.*;
-import io.netty.handler.stream.ChunkedFile;
-import lombok.RequiredArgsConstructor;
-import org.yomirein.sochatserver.common.models.MessagePacket;
-import org.yomirein.sochatserver.utils.MessageSender;
-import org.yomirein.sochatserver.messages.MessageService;
-import org.yomirein.sochatserver.chats.ChatService;
-import org.yomirein.sochatserver.chats.Chat;
-
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.netty.handler.codec.http.HttpResponseStatus.*;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+import org.yomirein.sochatserver.chats.Chat;
+import org.yomirein.sochatserver.chats.ChatService;
+import org.yomirein.sochatserver.utils.MessageSender;
 import static org.yomirein.sochatserver.utils.MessageSender.sendHttp;
+
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpChunkedInput;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpResponse;
+import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
+import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
+import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.multipart.Attribute;
+import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
+import io.netty.handler.codec.http.multipart.FileUpload;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import io.netty.handler.stream.ChunkedFile;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class MediaHandler {

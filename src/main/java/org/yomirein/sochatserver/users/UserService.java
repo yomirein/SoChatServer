@@ -1,12 +1,10 @@
 package org.yomirein.sochatserver.users;
 
 
-import lombok.RequiredArgsConstructor;
-import org.yomirein.sochatserver.friendship.FriendshipRepository;
-import org.yomirein.sochatserver.common.repos.TrustKeysRepository;
 import org.yomirein.sochatserver.utils.JwtService;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
 
 @RequiredArgsConstructor
 public class UserService {

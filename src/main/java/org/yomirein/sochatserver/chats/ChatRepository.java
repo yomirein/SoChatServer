@@ -1,14 +1,16 @@
 package org.yomirein.sochatserver.chats;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.yomirein.sochatserver.Database;
-import org.yomirein.sochatserver.calls.CallService;
-import org.yomirein.sochatserver.users.UserRepository;
 import org.yomirein.sochatserver.users.User;
-import org.yomirein.sochatserver.utils.KeyParser;
-
-import java.sql.*;
-import java.util.*;
-
+import org.yomirein.sochatserver.users.UserRepository;
 import static org.yomirein.sochatserver.utils.JsonConfig.mapUser;
 
 public class ChatRepository {

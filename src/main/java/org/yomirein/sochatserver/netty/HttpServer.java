@@ -1,7 +1,29 @@
 package org.yomirein.sochatserver.netty;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yomirein.sochatserver.auth.AuthHandler;
+import org.yomirein.sochatserver.auth.AuthService;
+import org.yomirein.sochatserver.calls.CallHandler;
+import org.yomirein.sochatserver.calls.CallService;
+import org.yomirein.sochatserver.chats.ChatHandler;
+import org.yomirein.sochatserver.friendship.FriendsHandler;
+import org.yomirein.sochatserver.media.MediaHandler;
+import org.yomirein.sochatserver.messages.MessageHandler;
+import org.yomirein.sochatserver.netty.codec.PacketDecoder;
+import org.yomirein.sochatserver.netty.codec.PacketEncoder;
+import org.yomirein.sochatserver.netty.handlers.HeartbeatHandler;
+import org.yomirein.sochatserver.netty.handlers.HttpPacketHandler;
+import org.yomirein.sochatserver.netty.handlers.WsPacketHandler;
+import org.yomirein.sochatserver.search.SearchHandler;
+import org.yomirein.sochatserver.sessions.SessionManager;
+import org.yomirein.sochatserver.users.UsersHandler;
+
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpMethod;
@@ -16,25 +38,6 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.yomirein.sochatserver.auth.AuthHandler;
-import org.yomirein.sochatserver.calls.CallHandler;
-import org.yomirein.sochatserver.calls.CallService;
-import org.yomirein.sochatserver.chats.ChatHandler;
-import org.yomirein.sochatserver.friendship.FriendsHandler;
-import org.yomirein.sochatserver.media.MediaHandler;
-import org.yomirein.sochatserver.media.MediaService;
-import org.yomirein.sochatserver.messages.MessageHandler;
-import org.yomirein.sochatserver.netty.handlers.HeartbeatHandler;
-import org.yomirein.sochatserver.search.SearchHandler;
-import org.yomirein.sochatserver.sessions.SessionManager;
-import org.yomirein.sochatserver.netty.codec.PacketDecoder;
-import org.yomirein.sochatserver.netty.codec.PacketEncoder;
-import org.yomirein.sochatserver.netty.handlers.WsPacketHandler;
-import org.yomirein.sochatserver.netty.handlers.HttpPacketHandler;
-import org.yomirein.sochatserver.auth.AuthService;
-import org.yomirein.sochatserver.users.UsersHandler;
 
 @AllArgsConstructor
 public class HttpServer {

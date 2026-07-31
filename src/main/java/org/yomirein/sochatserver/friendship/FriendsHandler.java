@@ -1,22 +1,22 @@
 package org.yomirein.sochatserver.friendship;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.netty.channel.ChannelHandlerContext;
-import lombok.RequiredArgsConstructor;
-import org.yomirein.sochatserver.sessions.SessionManager;
+import java.util.List;
+import java.util.Optional;
+
 import org.yomirein.sochatserver.common.models.MessagePacket;
-import org.yomirein.sochatserver.sessions.Session;
+import org.yomirein.sochatserver.sessions.SessionManager;
 import org.yomirein.sochatserver.users.User;
 import org.yomirein.sochatserver.users.UserRepository;
 import org.yomirein.sochatserver.users.UserService;
 import org.yomirein.sochatserver.utils.JsonConfig;
-import org.yomirein.sochatserver.utils.MessageSender;
+import static org.yomirein.sochatserver.utils.MessageSender.buildBaseResponse;
+import static org.yomirein.sochatserver.utils.MessageSender.notifyUser;
+import static org.yomirein.sochatserver.utils.MessageSender.sendError;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
-import static org.yomirein.sochatserver.utils.MessageSender.*;
+import io.netty.channel.ChannelHandlerContext;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class FriendsHandler {
