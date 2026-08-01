@@ -1,13 +1,5 @@
 package org.yomirein.sochatserver.media;
 
-import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.multipart.*;
-import lombok.AllArgsConstructor;
-import org.apache.commons.io.FilenameUtils;
-import org.yomirein.sochatserver.chats.ChatService;
-import org.yomirein.sochatserver.users.User;
-import org.yomirein.sochatserver.users.UserService;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,7 +10,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.yomirein.sochatserver.utils.MessageSender.sendHttp;
+import org.apache.commons.io.FilenameUtils;
+import org.yomirein.sochatserver.users.User;
+import org.yomirein.sochatserver.users.UserService;
+
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.multipart.FileUpload;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class MediaService {
@@ -26,7 +24,6 @@ public class MediaService {
     private final Path root = Paths.get("uploads").toAbsolutePath().normalize();
     private final MediaRepository mediaRepository;
 
-    private final ChatService chatService;
     private final UserService userService;
 
     public Media getMediaFile(String uri) throws MediaException {

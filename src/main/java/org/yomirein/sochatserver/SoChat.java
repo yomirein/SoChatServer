@@ -64,7 +64,7 @@ public class SoChat {
         FriendshipService friendshipService = new FriendshipService(friendshipRepository, userRepository, trustKeysRepository);
         UserService userService = new UserService(userRepository);
         ChatService chatService = new ChatService(userService, chatRepository);
-        MediaService mediaService = new MediaService(mediaRepository, chatService, userService);
+        MediaService mediaService = new MediaService(mediaRepository, userService);
         MessageService messageService = new MessageService(messageRepository, mediaService);
         CallService callService = new CallService(sessionManager);
         SearchService searchService = new SearchService(userRepository);
