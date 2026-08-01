@@ -1,7 +1,9 @@
 package org.yomirein.sochatserver.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,7 +24,7 @@ public class ConfigReader {
 
         // Getting our built server .jar file location
         try {
-            String basePath = new File(
+            new File(
                     ConfigReader.class.getProtectionDomain()
                             .getCodeSource()
                             .getLocation()
@@ -52,7 +54,7 @@ public class ConfigReader {
             }
 
         }
-        catch (Exception e) {
+        catch (IOException | RuntimeException | URISyntaxException e) {
             throw new RuntimeException("Failed to load config", e);
         }
 

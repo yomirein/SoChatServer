@@ -1,12 +1,10 @@
 package org.yomirein.sochatserver;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,20 +22,19 @@ import com.zaxxer.hikari.HikariDataSource;
 
 
 public class Main {
-    private static Process turnProcess;
 
     public static String osName = System.getProperty("os.name");
     public static String osVersion = System.getProperty("os.version");
     public static String osArch = System.getProperty("os.arch");
 
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
         //
         // TODO: Check compliance with the tables
         //
 
-        logger.info("Running on OS: " + osName + " " + osVersion + " " + osArch);
+        LOGGER.info("Running on OS: " + osName + " " + osVersion + " " + osArch);
 
         // This method does everything with databases
         databaseCheck();
@@ -49,7 +46,7 @@ public class Main {
             soTurn.run();
             soChat.run();
         } catch (Exception e){
-            e.printStackTrace();
+            LOGGER.error("Error starting SoChat", e);
         }
     }
 
@@ -58,18 +55,16 @@ public class Main {
         // Firstly getting config to get all data
         Map<String, String> propertiesMap = ConfigReader.getConfig();
         Properties properties = new Properties();
-        URI uri = null;
         try {
-            uri = ConfigReader.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            ConfigReader.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-        String absolutePath = new File(uri).getParent();
 
         // If config has url trying to connect to server
         // TODO: Make connection tries
         if (propertiesMap.containsKey("db.url")) {
-            logger.info("Config already contains Database info, skipping setup...");
+            LOGGER.info("Config already contains Database info, skipping setup...");
             return;
         }
 
@@ -87,7 +82,7 @@ public class Main {
 
         }
         catch (Exception e) {
-            logger.info("Exit with error: " + e);
+            LOGGER.info("Exit with error: " + e);
         }
     }
 
@@ -146,18 +141,18 @@ public class Main {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                logger.info("Database exists, using database with default name\n(if you don't want this database change in config.properties or delete to start setup)");
+                LOGGER.info("Database exists, using database with default name\n(if you don't want this database change in config.properties or delete to start setup)");
                 return "sochat";
             }
 
             // Create db in not
-            logger.info("Database not found.");
+            LOGGER.info("Database not found.");
 
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            logger.info("1 - use existing, 2 - create new (default 2)");
+            LOGGER.info("1 - use existing, 2 - create new (default 2)");
             int option = Integer.parseInt(readLine(in, "2"));
 
-            logger.info("Database name (sochat): ");
+            LOGGER.info("Database name (sochat): ");
             String dbName = readLine(in, "sochat");
 
             if (option == 2) {
@@ -168,7 +163,7 @@ public class Main {
                 }
                 catch (Exception e)
                 {
-                    logger.info("Exit with error:"+ e);
+                    LOGGER.info("Exit with error:"+ e);
                 }
             }
 
@@ -184,11 +179,11 @@ public class Main {
             st.executeUpdate("CREATE DATABASE  " + name);
 
             properties.setProperty("db.name", name);
-            logger.info("Created database successfully");
+            LOGGER.info("Created database successfully");
 
         }
         catch (Exception e){
-            e.printStackTrace();
+            LOGGER.error("Error creating database", e);
         }
     }
 
@@ -209,7 +204,7 @@ public class Main {
             """);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Error initializing db types", e);
         }
     }
 

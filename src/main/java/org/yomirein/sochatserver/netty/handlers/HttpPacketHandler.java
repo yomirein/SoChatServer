@@ -1,22 +1,30 @@
 package org.yomirein.sochatserver.netty.handlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
-import io.netty.util.CharsetUtil;
-import lombok.AllArgsConstructor;
-import org.yomirein.sochatserver.common.models.MessagePacket;
-import org.yomirein.sochatserver.auth.AuthService;
-import org.yomirein.sochatserver.media.MediaHandler;
-import org.yomirein.sochatserver.utils.JsonConfig;
-
 import java.util.List;
 import java.util.Map;
 
-import static io.netty.handler.codec.http.HttpResponseStatus.*;
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import org.yomirein.sochatserver.auth.AuthService;
+import org.yomirein.sochatserver.common.models.MessagePacket;
+import org.yomirein.sochatserver.media.MediaHandler;
+import org.yomirein.sochatserver.utils.JsonConfig;
 import static org.yomirein.sochatserver.utils.MessageSender.sendHttp;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.util.CharsetUtil;
+import lombok.AllArgsConstructor;
 
 // HttpPacketHandler using for register, validate user and then authenticate user
 @AllArgsConstructor
@@ -76,21 +84,20 @@ public class HttpPacketHandler extends SimpleChannelInboundHandler<FullHttpReque
                     // AuthService works like handler and service because of its easy work
 
                     // If it's registration we register user with AuthService.register()
-                    case ("/auth/register"):
+                    case ("/auth/register") -> {
                         MessagePacket registerResponse = authService.register(String.valueOf(payload.get("username")),
                                 String.valueOf(payload.get("ed25519PublicKey")), String.valueOf(payload.get("x25519PublicKey")));
                         // Send answer
                         configureResponseAndSend(channelHandlerContext, registerResponse);
-                        break;
-
+                    }
                     // And verifying user with checking for challenge competion
-                    case ("/auth/verify"):
+                    case ("/auth/verify") -> {
                         MessagePacket verifyResponse = authService.login(String.valueOf(payload.get("username")),
                                 String.valueOf(payload.get("signature")),
                                 String.valueOf(payload.get("challenge")));
                         // Send answer
                         configureResponseAndSend(channelHandlerContext, verifyResponse);
-                        break;
+                    }
                 }
             }
 

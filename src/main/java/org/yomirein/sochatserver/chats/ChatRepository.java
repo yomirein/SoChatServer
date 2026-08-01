@@ -10,12 +10,9 @@ import java.util.Optional;
 
 import org.yomirein.sochatserver.Database;
 import org.yomirein.sochatserver.users.User;
-import org.yomirein.sochatserver.users.UserRepository;
 import static org.yomirein.sochatserver.utils.JsonConfig.mapUser;
 
 public class ChatRepository {
-
-    private final UserRepository userRepository = new UserRepository();
 
     public Optional<Chat> findById(Long id) {
         String sql = 

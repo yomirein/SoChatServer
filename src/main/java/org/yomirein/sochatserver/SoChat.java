@@ -71,8 +71,8 @@ public class SoChat {
 
         // Handlers initialization
         AuthHandler authHandler = new AuthHandler(userRepository,sessionManager);
-        FriendsHandler friendsHandler = new FriendsHandler(sessionManager, userRepository, friendshipRepository, friendshipService, userService);
-        UsersHandler userHandler = new UsersHandler(sessionManager, userRepository, trustKeysRepository, userService);
+        FriendsHandler friendsHandler = new FriendsHandler(sessionManager, friendshipRepository, friendshipService, userService);
+        UsersHandler userHandler = new UsersHandler(sessionManager, trustKeysRepository, userService);
         ChatHandler chatHandler = new ChatHandler(chatService, userService, messageService, callService, sessionManager);
         MessageHandler messageHandler = new MessageHandler(messageService, chatService, userService, mediaService, sessionManager);
         MediaHandler mediaHandler = new MediaHandler(mediaService, chatService);

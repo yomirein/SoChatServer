@@ -10,6 +10,8 @@ import static org.yomirein.sochatserver.utils.JsonConfig.getTextOrNull;
 import static org.yomirein.sochatserver.utils.MessageSender.buildBaseResponse;
 import static org.yomirein.sochatserver.utils.MessageSender.handleError;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 
@@ -50,7 +52,7 @@ public class SearchHandler {
                 .build();
 
             channelHandlerContext.channel().writeAndFlush(answerPacket);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             handleError(channelHandlerContext, messagePacket, e);
         }
     }

@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.yomirein.sochatserver.common.models.MessagePacket;
 import org.yomirein.sochatserver.sessions.SessionManager;
 import org.yomirein.sochatserver.users.User;
-import org.yomirein.sochatserver.users.UserRepository;
 import org.yomirein.sochatserver.users.UserService;
 import org.yomirein.sochatserver.utils.JsonConfig;
 import static org.yomirein.sochatserver.utils.MessageSender.buildBaseResponse;
@@ -22,8 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class FriendsHandler {
 
     private final SessionManager sessionManager;
-
-    private final UserRepository userRepository;
+    
     private final FriendshipRepository friendshipRepository;
 
     private final FriendshipService friendshipService;
@@ -62,7 +60,7 @@ public class FriendsHandler {
             notifyUser(toUser, requestInformation, sessionManager);
             channelHandlerContext.channel().writeAndFlush(answerPacket);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }
@@ -102,7 +100,7 @@ public class FriendsHandler {
             notifyUser(toUser, requestInformation, sessionManager);
             channelHandlerContext.channel().writeAndFlush(answerPacket);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }
@@ -116,10 +114,8 @@ public class FriendsHandler {
             if (friendshipCheck.isEmpty()){
                 return;
             }
-            Friendship friendship = friendshipCheck.get();
 
 
-            boolean result = friendshipService.declineRequest(friendship.getId());
 
             MessagePacket answerPacket = buildBaseResponse(messagePacket,"Friend request declined successfully")
                     .put("removed", JsonConfig.MAPPER.writeValueAsString(toUser))
@@ -136,7 +132,7 @@ public class FriendsHandler {
             notifyUser(toUser, requestInformation, sessionManager);
             channelHandlerContext.channel().writeAndFlush(answerPacket);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }
@@ -152,7 +148,7 @@ public class FriendsHandler {
             }
             Friendship friendship = friendshipCheck.get();
 
-            boolean result = friendshipService.removeFriendship(friendship.getId());
+            friendshipService.removeFriendship(friendship.getId());
 
             MessagePacket answerPacket = buildBaseResponse(messagePacket,"Friendship deleted successfully")
                     .put("removed", JsonConfig.MAPPER.writeValueAsString(user))
@@ -169,7 +165,7 @@ public class FriendsHandler {
             notifyUser(toUser, requestInformation, sessionManager);
             channelHandlerContext.channel().writeAndFlush(answerPacket);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }
@@ -178,7 +174,6 @@ public class FriendsHandler {
     public void blockUser(ChannelHandlerContext channelHandlerContext, MessagePacket messagePacket, Long userId){
         try {
             User blocked = userService.getUser(messagePacket.getPayload().get("username").asText());
-            User user = userService.getUser(userId);
 
             Friendship result = friendshipService.block(userId, blocked.getId());
 
@@ -195,7 +190,7 @@ public class FriendsHandler {
 
             notifyUser(blocked, requestInformation, sessionManager);
             channelHandlerContext.channel().writeAndFlush(answerPacket);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }

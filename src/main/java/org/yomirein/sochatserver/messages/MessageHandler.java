@@ -1,10 +1,8 @@
 package org.yomirein.sochatserver.messages;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import io.netty.channel.ChannelHandlerContext;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.yomirein.sochatserver.chats.Chat;
 import org.yomirein.sochatserver.chats.ChatRole;
 import org.yomirein.sochatserver.chats.ChatService;
@@ -15,12 +13,21 @@ import org.yomirein.sochatserver.sessions.SessionManager;
 import org.yomirein.sochatserver.users.User;
 import org.yomirein.sochatserver.users.UserService;
 import org.yomirein.sochatserver.utils.JsonConfig;
-
-import java.util.List;
-
-import static org.yomirein.sochatserver.utils.JsonConfig.*;
-import static org.yomirein.sochatserver.utils.MessageSender.*;
+import static org.yomirein.sochatserver.utils.JsonConfig.MAPPER;
+import static org.yomirein.sochatserver.utils.JsonConfig.getIntOrNull;
+import static org.yomirein.sochatserver.utils.JsonConfig.getLongOrNull;
+import static org.yomirein.sochatserver.utils.JsonConfig.getTextOrNull;
 import static org.yomirein.sochatserver.utils.MessageSender.buildBaseResponse;
+import static org.yomirein.sochatserver.utils.MessageSender.handleError;
+import static org.yomirein.sochatserver.utils.MessageSender.notifyUser;
+import static org.yomirein.sochatserver.utils.MessageSender.sendError;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import io.netty.channel.ChannelHandlerContext;
+import lombok.RequiredArgsConstructor;
 
 // MessageHandler.java handles messages, getting them setting or deleting
 @RequiredArgsConstructor
@@ -90,7 +97,7 @@ public class MessageHandler {
             for (User member : chatMembers) {
                 notifyUser(member, requestInformation, sessionManager);
             }
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             handleError(channelHandlerContext, messagePacket, e);
         }
     }
@@ -112,7 +119,7 @@ public class MessageHandler {
 
             // Sending data
             channelHandlerContext.writeAndFlush(answerPacket);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             handleError(channelHandlerContext, messagePacket, e);
         }
     }
@@ -129,7 +136,7 @@ public class MessageHandler {
             }
             // Get recent messages
             List<Message> messages = messageService.getRecentMessages(chatId, offset);
-            for (var message : messages) {
+            for (Message message : messages) {
                 message.setMediaFiles(
                         mediaService.getAllMediaFromMessage(message.getId())
                 );
@@ -142,7 +149,7 @@ public class MessageHandler {
 
             // Sending data
             channelHandlerContext.channel().writeAndFlush(answerPacket);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             handleError(channelHandlerContext, messagePacket, e);
         }
     }
@@ -193,7 +200,7 @@ public class MessageHandler {
             for (User member : chatMembers) {
                 notifyUser(member, requestInformation, sessionManager);
             }
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             handleError(channelHandlerContext, messagePacket, e);
         }
     }
@@ -252,7 +259,7 @@ public class MessageHandler {
             for (User member : chatMembers) {
                 notifyUser(member, requestInformation, sessionManager);
             }
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             handleError(channelHandlerContext, messagePacket, e);
         }
     }
@@ -293,7 +300,7 @@ public class MessageHandler {
                     .toList();
 
             // Actually deleting message
-            boolean result = messageService.deleteMessage(messageId);
+            messageService.deleteMessage(messageId);
 
             // Generating answer
             MessagePacket answerPacket = buildBaseResponse(messagePacket, "Message deleted successfully")
@@ -311,7 +318,7 @@ public class MessageHandler {
             for (User member : chatMembers) {
                 notifyUser(member, requestInformation, sessionManager);
             }
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             handleError(channelHandlerContext, messagePacket, e);
         }
     }

@@ -9,6 +9,8 @@ import org.yomirein.sochatserver.utils.JsonConfig;
 import static org.yomirein.sochatserver.utils.MessageSender.notifyUser;
 import static org.yomirein.sochatserver.utils.MessageSender.sendError;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +19,6 @@ public class UsersHandler {
 
     private final SessionManager sessionManager;
 
-    private final UserRepository userRepository;
     private final TrustKeysRepository trustKeysRepository;
 
     private final UserService userService;
@@ -52,7 +53,7 @@ public class UsersHandler {
 
             channelHandlerContext.channel().writeAndFlush(answerPacket);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException | IllegalArgumentException e) {
             System.out.println(e);
             sendError(channelHandlerContext, messagePacket, e.getMessage());
             throw new RuntimeException(e);
@@ -74,7 +75,7 @@ public class UsersHandler {
                     ? messagePacket.payload.get("description").asText()
                     : null;
             
-            boolean result = userService.changeProfile(userId, username, nickname, description);
+            userService.changeProfile(userId, username, nickname, description);
             User user = userService.getUser(userId);
 
 

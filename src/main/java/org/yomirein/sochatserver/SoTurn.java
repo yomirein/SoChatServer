@@ -1,10 +1,5 @@
 package org.yomirein.sochatserver;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.yomirein.sochatserver.utils.ConfigReader;
-import org.yomirein.sochatserver.utils.JwtService;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,6 +10,11 @@ import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yomirein.sochatserver.utils.ConfigReader;
+import org.yomirein.sochatserver.utils.JwtService;
 
 public class SoTurn {
 
@@ -57,7 +57,7 @@ public class SoTurn {
                     .header("Accept", "application/octet-stream")
                     .build();
 
-            HttpResponse<Path> response = client.send(
+            client.send(
                     request,
                     HttpResponse.BodyHandlers.ofFile(savePath)
             );
@@ -91,9 +91,7 @@ public class SoTurn {
                 }
                 turnProcess.waitFor();
 
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         });

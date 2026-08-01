@@ -1,17 +1,25 @@
 package org.yomirein.sochatserver.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.*;
-import io.netty.util.CharsetUtil;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yomirein.sochatserver.common.models.MessagePacket;
 import org.yomirein.sochatserver.sessions.Session;
 import org.yomirein.sochatserver.sessions.SessionManager;
 import org.yomirein.sochatserver.users.User;
 
-import java.util.Set;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.util.CharsetUtil;
 
 // A little class for handlers where it generates easy messages to send users
 public class MessageSender {
@@ -79,9 +87,10 @@ public class MessageSender {
         ctx.channel().writeAndFlush(packet);
     }
 
-    // To reduce repetition
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageSender.class);
+    
     public static void handleError(ChannelHandlerContext ctx, MessagePacket packet, Exception e) {
-        e.printStackTrace();
+        LOGGER.error("Caught an exception", e);
         sendError(ctx, packet, e.getMessage());
     }
 

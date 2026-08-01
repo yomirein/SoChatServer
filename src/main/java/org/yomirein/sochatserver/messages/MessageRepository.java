@@ -1,14 +1,18 @@
 package org.yomirein.sochatserver.messages;
 
-import org.yomirein.sochatserver.Database;
-import org.yomirein.sochatserver.chats.Participant;
-import org.yomirein.sochatserver.media.Media;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.yomirein.sochatserver.Database;
+import org.yomirein.sochatserver.chats.Participant;
 
 public class MessageRepository {
 

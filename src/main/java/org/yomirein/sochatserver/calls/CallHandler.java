@@ -1,9 +1,14 @@
 package org.yomirein.sochatserver.calls;
 
-import io.netty.channel.ChannelHandlerContext;
-import lombok.RequiredArgsConstructor;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import org.yomirein.sochatserver.calls.p2p.IceCandidatePayload;
 import org.yomirein.sochatserver.calls.p2p.P2PRoom;
+import org.yomirein.sochatserver.chats.CallState;
 import org.yomirein.sochatserver.chats.Chat;
 import org.yomirein.sochatserver.chats.ChatService;
 import org.yomirein.sochatserver.chats.ChatType;
@@ -17,13 +22,11 @@ import org.yomirein.sochatserver.users.UserService;
 import org.yomirein.sochatserver.utils.ConfigReader;
 import org.yomirein.sochatserver.utils.JwtService;
 import org.yomirein.sochatserver.utils.MessageSender;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import static org.yomirein.sochatserver.utils.MessageSender.notifyUser;
 import static org.yomirein.sochatserver.utils.MessageSender.sendError;
+
+import io.netty.channel.ChannelHandlerContext;
+import lombok.RequiredArgsConstructor;
 
 /*
        Dope ### wizard tower on CallHandler
@@ -71,7 +74,7 @@ public class CallHandler {
                     .put("turn_port", Integer.parseInt(ConfigReader.getConfig().get("turn.port")))
                     .build();
             channelHandlerContext.channel().writeAndFlush(answerPacket);
-        } catch (Exception e) {
+        } catch (NumberFormatException | InvalidKeyException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }

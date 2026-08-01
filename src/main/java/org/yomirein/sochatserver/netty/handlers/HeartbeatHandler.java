@@ -18,8 +18,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        if (evt instanceof IdleStateEvent) {
-            IdleStateEvent e = (IdleStateEvent) evt;
+        if (evt instanceof IdleStateEvent e) {
 
             if (e.state() == IdleState.WRITER_IDLE) {
                 ctx.writeAndFlush(new PingWebSocketFrame());
