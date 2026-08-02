@@ -114,8 +114,8 @@ public class FriendsHandler {
             if (friendshipCheck.isEmpty()){
                 return;
             }
-
-
+            
+            friendshipService.declineRequest(friendship.getId());
 
             MessagePacket answerPacket = buildBaseResponse(messagePacket,"Friend request declined successfully")
                     .put("removed", JsonConfig.MAPPER.writeValueAsString(toUser))
