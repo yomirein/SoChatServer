@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class FriendsHandler {
 
     private final SessionManager sessionManager;
-    
+
     private final FriendshipRepository friendshipRepository;
 
     private final FriendshipService friendshipService;
@@ -114,7 +114,8 @@ public class FriendsHandler {
             if (friendshipCheck.isEmpty()){
                 return;
             }
-            
+
+            Friendship friendship = friendshipCheck.get();
             friendshipService.declineRequest(friendship.getId());
 
             MessagePacket answerPacket = buildBaseResponse(messagePacket,"Friend request declined successfully")
