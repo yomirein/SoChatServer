@@ -1,10 +1,12 @@
 package org.yomirein.sochatserver.common.models;
 
+import org.yomirein.sochatserver.utils.JsonConfig;
+
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import lombok.Getter;
 import lombok.Setter;
-import org.yomirein.sochatserver.utils.JsonConfig;
 
 public class MessagePacket {
     @Getter @Setter
@@ -29,7 +31,7 @@ public class MessagePacket {
     public static class Builder {
 
         private String type;
-        private ObjectNode payload = JsonConfig.MAPPER.createObjectNode();
+        private final ObjectNode payload = JsonConfig.MAPPER.createObjectNode();
 
         public Builder type(String type) {
             this.type = type;

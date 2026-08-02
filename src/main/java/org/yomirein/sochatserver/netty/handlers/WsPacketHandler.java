@@ -1,9 +1,7 @@
 package org.yomirein.sochatserver.netty.handlers;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yomirein.sochatserver.auth.AuthHandler;
@@ -11,18 +9,20 @@ import org.yomirein.sochatserver.calls.CallHandler;
 import org.yomirein.sochatserver.calls.CallService;
 import org.yomirein.sochatserver.calls.p2p.P2PRoom;
 import org.yomirein.sochatserver.chats.ChatHandler;
+import org.yomirein.sochatserver.common.models.MessagePacket;
+import org.yomirein.sochatserver.friendship.FriendsHandler;
 import org.yomirein.sochatserver.messages.MessageHandler;
 import org.yomirein.sochatserver.search.SearchHandler;
-import org.yomirein.sochatserver.sessions.SessionManager;
-import org.yomirein.sochatserver.common.models.MessagePacket;
 import org.yomirein.sochatserver.sessions.Session;
-import org.yomirein.sochatserver.friendship.FriendsHandler;
+import org.yomirein.sochatserver.sessions.SessionManager;
 import org.yomirein.sochatserver.users.UsersHandler;
 import org.yomirein.sochatserver.utils.JwtService;
-
-import java.util.Optional;
-
 import static org.yomirein.sochatserver.utils.MessageSender.sendError;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import lombok.RequiredArgsConstructor;
 
 // WsPacketHandler.java handles everything except authentication xd
 @RequiredArgsConstructor
@@ -49,63 +49,50 @@ public class WsPacketHandler extends SimpleChannelInboundHandler<MessagePacket> 
             // ping-pong and authentication without withAuth
             // PING PONG
             // May be deleted later if I replace it with low-level ping-pong
-            case "ping": ping(channelHandlerContext.channel()); break;
+            case "ping" -> ping(channelHandlerContext.channel());
             // Authentication
-            case "authenticate": authHandler.authorize(channelHandlerContext, messagePacket); break;
-
+            case "authenticate" -> authHandler.authorize(channelHandlerContext, messagePacket);
             // FRIENDSHIP SERVICE
-            case "friend_request": withAuth(channelHandlerContext, messagePacket, friendsHandler::requestSend); break;
-            case "friend_accept": withAuth(channelHandlerContext, messagePacket, friendsHandler::requestAccept); break;
-
-            case "friend_remove": withAuth(channelHandlerContext, messagePacket, friendsHandler::removeFriend); break;
-            case "block": withAuth(channelHandlerContext, messagePacket, friendsHandler::blockUser); break;
-            case "friend_decline": withAuth(channelHandlerContext, messagePacket, friendsHandler::requestDecline); break;
-
-            case "relatives_list": withAuth(channelHandlerContext, messagePacket, friendsHandler::getRelatives); break;
-
+            case "friend_request" -> withAuth(channelHandlerContext, messagePacket, friendsHandler::requestSend);
+            case "friend_accept" -> withAuth(channelHandlerContext, messagePacket, friendsHandler::requestAccept);
+            case "friend_remove" -> withAuth(channelHandlerContext, messagePacket, friendsHandler::removeFriend);
+            case "block" -> withAuth(channelHandlerContext, messagePacket, friendsHandler::blockUser);
+            case "friend_decline" -> withAuth(channelHandlerContext, messagePacket, friendsHandler::requestDecline);
+            case "relatives_list" -> withAuth(channelHandlerContext, messagePacket, friendsHandler::getRelatives);
             // USER SERVICE
-            case "user_get": withAuth(channelHandlerContext, messagePacket, usersHandler::getUser); break;
-            case "user_update_profile": withAuth(channelHandlerContext, messagePacket, usersHandler::changeProfile); break;
-
+            case "user_get" -> withAuth(channelHandlerContext, messagePacket, usersHandler::getUser);
+            case "user_update_profile" -> withAuth(channelHandlerContext, messagePacket, usersHandler::changeProfile);
             // CHAT MANAGEMENT
-            case "chat_create": withAuth(channelHandlerContext, messagePacket, chatHandler::createChat); break;
-            case "chat_list": withAuth(channelHandlerContext, messagePacket, chatHandler::getUserChats); break;
-            case "chat_get": withAuth(channelHandlerContext, messagePacket, chatHandler::getChat); break;
-
-            case "chat_delete": withAuth(channelHandlerContext, messagePacket, chatHandler::deleteChat); break;
-            case "chat_leave": withAuth(channelHandlerContext, messagePacket, chatHandler::removeParticipant); break;
-
-            case "chat_get_users": withAuth(channelHandlerContext, messagePacket, chatHandler::getChatUsers); break;
-            case "chat_add_participant": withAuth(channelHandlerContext, messagePacket, chatHandler::addParticipant); break;
-
+            case "chat_create" -> withAuth(channelHandlerContext, messagePacket, chatHandler::createChat);
+            case "chat_list" -> withAuth(channelHandlerContext, messagePacket, chatHandler::getUserChats);
+            case "chat_get" -> withAuth(channelHandlerContext, messagePacket, chatHandler::getChat);
+            case "chat_delete" -> withAuth(channelHandlerContext, messagePacket, chatHandler::deleteChat);
+            case "chat_leave" -> withAuth(channelHandlerContext, messagePacket, chatHandler::removeParticipant);
+            case "chat_get_users" -> withAuth(channelHandlerContext, messagePacket, chatHandler::getChatUsers);
+            case "chat_add_participant" -> withAuth(channelHandlerContext, messagePacket, chatHandler::addParticipant);
             // MESSAGE MANAGEMENT
-            case "message_send": withAuth(channelHandlerContext, messagePacket, messageHandler::sendMessage); break;
-            case "message_edit": withAuth(channelHandlerContext, messagePacket, messageHandler::editMessage); break;
-            case "message_delete": withAuth(channelHandlerContext, messagePacket, messageHandler::deleteMessage); break;
-
-            case "message_read": withAuth(channelHandlerContext, messagePacket, messageHandler::setLastReadMessage); System.out.println("t"); break;
-
-            case "message_list": withAuth(channelHandlerContext, messagePacket, messageHandler::getRecentMessages); break;
-            case "message_get": withAuth(channelHandlerContext, messagePacket, messageHandler::getMessage); break;
-
+            case "message_send" -> withAuth(channelHandlerContext, messagePacket, messageHandler::sendMessage);
+            case "message_edit" -> withAuth(channelHandlerContext, messagePacket, messageHandler::editMessage);
+            case "message_delete" -> withAuth(channelHandlerContext, messagePacket, messageHandler::deleteMessage);
+            case "message_read" -> {
+                withAuth(channelHandlerContext, messagePacket, messageHandler::setLastReadMessage); System.out.println("t");
+            }
+            case "message_list" -> withAuth(channelHandlerContext, messagePacket, messageHandler::getRecentMessages);
+            case "message_get" -> withAuth(channelHandlerContext, messagePacket, messageHandler::getMessage);
+            case "turn_credentials_get" -> withAuth(channelHandlerContext, messagePacket, callHandler::turnCredentials);
 
             // CALLS MANAGEMENT
-            case "turn_credentials_get": withAuth(channelHandlerContext, messagePacket, callHandler::turnCredentials); break;
-
-            case "call_offer": withAuth(channelHandlerContext, messagePacket, callHandler::call); break;
-            //case "call_accept": withAuth(channelHandlerContext, messagePacket, callHandler::acceptCall); break;
-            case "call_check": withAuth(channelHandlerContext, messagePacket, callHandler::checkCall); break;
-
-            case "call_answer": withAuth(channelHandlerContext, messagePacket, callHandler::answerRtc); break;
-            case "call_ice": withAuth(channelHandlerContext, messagePacket, callHandler::iceRtc); break;
-            case "call_end": withAuth(channelHandlerContext, messagePacket, callHandler::endCall); break;
-
-
+            case "call_offer" -> withAuth(channelHandlerContext, messagePacket, callHandler::call);
+          //case "call_accept" -> withAuth(channelHandlerContext, messagePacket, callHandler::acceptCall);
+            case "call_check" -> withAuth(channelHandlerContext, messagePacket, callHandler::checkCall);
+            case "call_answer" -> withAuth(channelHandlerContext, messagePacket, callHandler::answerRtc);
+            case "call_ice" -> withAuth(channelHandlerContext, messagePacket, callHandler::iceRtc);
+            case "call_end" -> withAuth(channelHandlerContext, messagePacket, callHandler::endCall);
             // SEARCH
-            case "search_user": withAuth(channelHandlerContext, messagePacket, searchHandler::searchUsers); break;
+            case "search_user" -> withAuth(channelHandlerContext, messagePacket, searchHandler::searchUsers);
 
         }
-    }
+            }
 
     // Ping Pong answer to user
     public void ping(Channel channel) {
@@ -162,7 +149,7 @@ public class WsPacketHandler extends SimpleChannelInboundHandler<MessagePacket> 
     // Exceptions
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
+        LOGGER.error("Caught an exception", cause);
     }
 
 }

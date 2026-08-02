@@ -1,15 +1,19 @@
 package org.yomirein.sochatserver.search;
 
-import static org.yomirein.sochatserver.utils.JsonConfig.*;
+import java.util.List;
+
+import org.yomirein.sochatserver.common.models.MessagePacket;
+import org.yomirein.sochatserver.users.User;
+import static org.yomirein.sochatserver.utils.JsonConfig.MAPPER;
+import static org.yomirein.sochatserver.utils.JsonConfig.getIntOrNull;
+import static org.yomirein.sochatserver.utils.JsonConfig.getTextOrNull;
 import static org.yomirein.sochatserver.utils.MessageSender.buildBaseResponse;
 import static org.yomirein.sochatserver.utils.MessageSender.handleError;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpRequest;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.yomirein.sochatserver.common.models.MessagePacket;
-import org.yomirein.sochatserver.users.User;
 
 @RequiredArgsConstructor
 public class SearchHandler {
@@ -48,7 +52,7 @@ public class SearchHandler {
                 .build();
 
             channelHandlerContext.channel().writeAndFlush(answerPacket);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             handleError(channelHandlerContext, messagePacket, e);
         }
     }

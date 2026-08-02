@@ -3,11 +3,12 @@ package org.yomirein.sochatserver.calls.p2p;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.yomirein.sochatserver.calls.CallState;
 import org.yomirein.sochatserver.sessions.Session;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.yomirein.sochatserver.chats.CallState;
 @Getter @Setter
 public class P2PRoom {
     private long chatId;

@@ -1,13 +1,15 @@
 package org.yomirein.sochatserver.users;
 
+import java.security.PublicKey;
+
+import org.yomirein.sochatserver.utils.PublicKeySerializer;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.yomirein.sochatserver.utils.PublicKeySerializer;
-
-import java.security.PublicKey;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,7 +18,7 @@ public class User {
     @Getter @Setter
     private long id;
 
-    @Getter @Setter
+    @Setter
     private String nickname;
 
     @Getter @Setter

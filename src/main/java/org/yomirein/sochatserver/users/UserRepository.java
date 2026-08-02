@@ -1,7 +1,5 @@
 package org.yomirein.sochatserver.users;
 
-import static org.yomirein.sochatserver.utils.JsonConfig.mapUser;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,12 +8,16 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yomirein.sochatserver.Database;
-import org.yomirein.sochatserver.messages.Message;
-import org.yomirein.sochatserver.utils.KeyParser;
+import static org.yomirein.sochatserver.utils.JsonConfig.mapUser;
 
 // UserRepository.java, as like other repositories using for talking with database
 public class UserRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
 
     private static final String USER_FIELDS =
         "id, nickname, username, description, ed25519_public_key, x25519_public_key";
@@ -49,7 +51,7 @@ public class UserRepository {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error saving a user", e);
         }
         return null;
     }
@@ -84,7 +86,7 @@ public class UserRepository {
     public List<User> searchByUsername(String username, int offset, int limit) {
         List<User> out = new ArrayList<>();
 
-        if (username.isEmpty() || username == null) {
+        if (username == null || username.isEmpty() ) {
             return out;
         }
 

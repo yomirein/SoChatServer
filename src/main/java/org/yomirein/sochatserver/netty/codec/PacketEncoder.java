@@ -1,16 +1,15 @@
 package org.yomirein.sochatserver.netty.codec;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+
+import org.yomirein.sochatserver.common.models.MessagePacket;
+import static org.yomirein.sochatserver.utils.JsonConfig.MAPPER;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import org.yomirein.sochatserver.common.models.MessagePacket;
-import org.yomirein.sochatserver.utils.JsonConfig;
-
-import java.util.List;
-
-import static org.yomirein.sochatserver.utils.JsonConfig.MAPPER;
 
 
 // Simple packet encoder that encodes all data

@@ -1,13 +1,13 @@
 package org.yomirein.sochatserver.chats;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
+
 import org.yomirein.sochatserver.calls.CallService;
-import org.yomirein.sochatserver.calls.CallState;
 import org.yomirein.sochatserver.calls.p2p.P2PRoom;
 import org.yomirein.sochatserver.common.models.MessagePacket;
-import org.yomirein.sochatserver.messages.Message;
 import org.yomirein.sochatserver.messages.MessageService;
 import org.yomirein.sochatserver.sessions.SessionManager;
 import org.yomirein.sochatserver.users.User;
@@ -18,6 +18,8 @@ import org.yomirein.sochatserver.utils.MessageSender;
 import java.util.*;
 
 import static org.yomirein.sochatserver.utils.MessageSender.*;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @RequiredArgsConstructor
 public class ChatHandler {
@@ -61,7 +63,7 @@ public class ChatHandler {
 
             channelHandlerContext.channel().writeAndFlush(answerPacket);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException | IllegalArgumentException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }
@@ -73,11 +75,10 @@ public class ChatHandler {
 
             chats.forEach(chat -> {
                 List<Participant> participants = chatService.getParticipantList(chat.getId());
-                List<SenderKey> senderKeys = chatService.getUserChatSenderKeys(chat.getId(), userId);
 
                 Optional<P2PRoom> callRoom = callService.findRoomByChatId(chat.getId());
                 if (callRoom.isPresent() && callRoom.get().getCallState() != CallState.IDLE) {
-                    chat.setCallState(callRoom.get().getCallState());
+                    chat.setCallState((CallState)callRoom.get().getCallState());
                 }
 
                 chat.setParticipants(participants);
@@ -94,7 +95,7 @@ public class ChatHandler {
                     .build();
 
             channelHandlerContext.channel().writeAndFlush(answerPacket);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }
@@ -138,7 +139,7 @@ public class ChatHandler {
             }
             notifyUser(fromUser, answerPacket, sessionManager);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException | IllegalArgumentException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }
@@ -168,13 +169,11 @@ public class ChatHandler {
             int keyVersion = 0;
 
             switch (chat.getChatType()){
-                case ChatType.GROUP_SECURE: {
+                case GROUP_SECURE ->  {
                     keyVersion = chatService.getCurrentKeyVersion(chatId)+1;
-                    break;
                 }
-                case ChatType.GROUP_INSECURE: {
+                case GROUP_INSECURE ->  {
                     keyVersion = chatService.getCurrentKeyVersion(chatId);
-                    break;
                 }
             }
             for (Map.Entry<Long, String> user : users.entrySet()){
@@ -209,7 +208,7 @@ public class ChatHandler {
             }
 
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException | IllegalArgumentException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }
@@ -230,7 +229,7 @@ public class ChatHandler {
 
             List<Participant> participants = chatService.getParticipantList(chat.getId());
 
-            boolean result = chatService.deleteChat(chat);
+            chatService.deleteChat(chat);
 
             chat = mapPrivateChat(chat, fromUser.getId(), participants);
             MessagePacket answerPacket = buildBaseResponse(messagePacket, "Chat deleted successfully")
@@ -251,7 +250,7 @@ public class ChatHandler {
                 notifyUser(user, requestInformation, sessionManager);
             }
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }
@@ -283,8 +282,6 @@ public class ChatHandler {
             chatService.removeSenderKeys(chatId,toUser.getId());
             chat.setParticipants(chatService.getParticipantList(chat.getId()));
 
-            int keyVersion = 0;
-
             List<User> chatMembers = chat.getParticipants().stream()
                     .map(p -> userService.getUser(p.getUserId()))
                     .filter(user -> user.getId() != userId)
@@ -311,7 +308,7 @@ public class ChatHandler {
             }
 
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }
@@ -328,7 +325,7 @@ public class ChatHandler {
 
             channelHandlerContext.channel().writeAndFlush(answerPacket);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             sendError(channelHandlerContext, messagePacket, e.getMessage());
         }
     }

@@ -1,13 +1,13 @@
 package org.yomirein.sochatserver.friendship;
 
-import lombok.RequiredArgsConstructor;
-import org.postgresql.util.PSQLException;
-import org.yomirein.sochatserver.users.User;
-import org.yomirein.sochatserver.common.repos.TrustKeysRepository;
-import org.yomirein.sochatserver.users.UserRepository;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.yomirein.sochatserver.common.repos.TrustKeysRepository;
+import org.yomirein.sochatserver.users.User;
+import org.yomirein.sochatserver.users.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 
 @RequiredArgsConstructor

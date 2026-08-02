@@ -1,13 +1,13 @@
 package org.yomirein.sochatserver.chats;
 
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.yomirein.sochatserver.users.User;
 import org.yomirein.sochatserver.users.UserService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ChatService {
