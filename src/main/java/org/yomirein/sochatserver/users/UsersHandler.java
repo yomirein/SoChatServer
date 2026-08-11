@@ -63,9 +63,14 @@ public class UsersHandler {
     public void changeProfile(ChannelHandlerContext channelHandlerContext, MessagePacket messagePacket, Long userId) {
         try {
 
-            String username = messagePacket.payload.has("username") && !messagePacket.payload.get("username").isNull()
+            String username = messagePacket.payload.has("username")
+                    && !messagePacket.payload.get("username").isNull()
                     ? messagePacket.payload.get("username").asText()
                     : null;
+
+            if (username != null && username.isBlank()) {
+                throw new IllegalArgumentException("Username cannot be empty");
+            }
 
             String nickname = messagePacket.payload.has("nickname") && !messagePacket.payload.get("nickname").isNull()
                     ? messagePacket.payload.get("nickname").asText()
@@ -74,7 +79,7 @@ public class UsersHandler {
             String description = messagePacket.payload.has("description") && !messagePacket.payload.get("description").isNull()
                     ? messagePacket.payload.get("description").asText()
                     : null;
-            
+
             userService.changeProfile(userId, username, nickname, description);
             User user = userService.getUser(userId);
 
@@ -90,7 +95,7 @@ public class UsersHandler {
                     .build();
 
             notifyUser(user, answerPacket, sessionManager);
-            
+
 
         } catch (Exception e) {
             System.out.println(e);
