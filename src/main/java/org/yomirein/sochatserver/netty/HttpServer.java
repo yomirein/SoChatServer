@@ -20,12 +20,14 @@ import org.yomirein.sochatserver.sessions.SessionManager;
 import org.yomirein.sochatserver.users.UsersHandler;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.nio.NioIoHandler;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -67,9 +69,8 @@ public class HttpServer {
         logger.info("Starting Http and WebSocket Server");
 
         // EventLoopGroups
-        EventLoopGroup bossGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
         EventLoopGroup workerGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
-
+        EventLoopGroup bossGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
 
         CorsConfig corsConfig = CorsConfigBuilder.forAnyOrigin() //
                 // Allows all origins
@@ -82,12 +83,13 @@ public class HttpServer {
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .handler(new LoggingHandler(LogLevel.TRACE))
-                    .childHandler(new ChannelInitializer<Channel>() {
+                .channel(NioServerSocketChannel.class)
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(Channel channel) throws Exception {
+                        protected void initChannel(SocketChannel channel) throws Exception {
                             ChannelPipeline p = channel.pipeline();
+                            p.addLast(new LoggingHandler(LogLevel.TRACE));
 
                             // HTTP Server
                             p.addLast(new HttpServerCodec());
@@ -112,14 +114,14 @@ public class HttpServer {
                                     friendsHandler, usersHandler, chatHandler, messageHandler, callHandler, searchHandler, callService));
                             p.addLast(new PacketEncoder());
                         }
-                    });
+                    }).option(ChannelOption.TCP_NODELAY, true)
+                    .option(ChannelOption.SO_KEEPALIVE, true);;
 
             // Starting server
-            Channel channel = b.bind(port).sync().channel();
-            channel.closeFuture().sync();
+            ChannelFuture future = b.bind(port).sync();
+            future.channel().closeFuture().sync();
         }
         finally {
-            bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
     }

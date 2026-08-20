@@ -186,9 +186,9 @@ public class CallHandler {
             P2PRoom p2pRoom = callService.findRoomBySession(userSession).orElseThrow(
                     () -> new IllegalStateException("Session is not in any call!")
             );
-            
+
             p2pRoom.setCallState(CallState.IN_CALL);
-            
+
             Session otherSession = p2pRoom.getOther(userSession);
 
             String answer = messagePacket.getPayload().get("sdp").asText();
@@ -197,6 +197,7 @@ public class CallHandler {
                     .type("call_answer")
                     .put("sdp", answer)
                     .put("chat_id", p2pRoom.getChatId())
+                    .put("user_id", userSession.getUser().getId())
                     .build();
 
             otherSession.getChannel().writeAndFlush(answerPacket);
