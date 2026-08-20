@@ -35,6 +35,7 @@ To host your own server you just need to install Java 23+ and PostgreSQL(SQLite 
 | logback-classic   | 1.5.32      |
 | HikariCP          | 5.1.0       |
 | PostgreSQL        | 42.7.1      |
+| SQLite            | 3.53.2.1    |
 | Lombok            | 1.18.42     |
 | Apache Commons IO | 2.22.0       |
 

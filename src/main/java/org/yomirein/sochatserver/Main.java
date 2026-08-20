@@ -73,20 +73,29 @@ public class Main {
         // Getting postgres connection credentials
         DbInput input = readDbInput();
 
-        // Creating database and save it in config
-        try (HikariDataSource ds = dataSourceFactory(input.ipPort, "", input.user, input.password);) {
-
-            String dbName = resolveDatabase(ds, input, properties);
-
-            saveConfig(properties, input, dbName);
+        if ("sqlite".equals(input.type)) {
 
         }
-        catch (Exception e) {
-            LOGGER.info("Exit with error: " + e);
+        else if ("postgres".equals(input.type)) {
+            // Creating database and save it in config
+            try (HikariDataSource ds = dataSourceFactory(input.type, input.ipPort, "", input.user, input.password);) {
+
+                String dbName = resolveDatabase(input.type, ds, input, properties);
+
+                saveConfig(properties, input, dbName);
+
+            }
+            catch (Exception e) {
+                LOGGER.info("Exit with error: " + e);
+            }
+        }
+        else {
+            throw new IllegalArgumentException("Unsupported database type: " + input.type);
         }
     }
 
     private static void saveConfig(Properties prop, DbInput input, String dbName) {
+        prop.setProperty("db.type", input.type);
         prop.setProperty("db.url", input.ipPort);
         prop.setProperty("db.username", input.user);
         prop.setProperty("db.password", input.password);
@@ -101,6 +110,7 @@ public class Main {
     }
 
     private static class DbInput {
+        String type;
         String ipPort;
         String user;
         String password;
@@ -112,20 +122,31 @@ public class Main {
 
         DbInput input = new DbInput();
 
-        System.out.println("Type server Ip:Port (localhost:5432): ");
-        input.ipPort = readLine(in, "localhost:5432");
+        System.out.println("TYPE ONLY IF YOU KNOW WHAT YOU'RE DOING");
+        System.out.println("Type database type: sqlite/postgresql (sqlite): ");
+        input.type = readLine(in, "sqlite");
 
-        System.out.println("Type psql root username (postgres): ");
-        input.user = readLine(in, "postgres");
+        if (input.type.equals("sqlite")) {
+            return input;
+        } else if (input.type.equals("postgresql")) {
+            System.out.println("Type server Ip:Port (localhost:5432): ");
+            input.ipPort = readLine(in, "localhost:5432");
 
-        System.out.println("Type psql root password: ");
-        input.password = readLine(in, "");
+            System.out.println("Type psql root username (postgres): ");
+            input.user = readLine(in, "postgres");
+
+            System.out.println("Type psql root password: ");
+            input.password = readLine(in, "");
+        } else {
+            throw new RuntimeException("Invalid database type: " + input.type);
+        }
 
         return input;
     }
 
     // Creating database or just write existing 'sochat' database without creating new
     private static String resolveDatabase(
+        String type,
             HikariDataSource ds,
             DbInput input,
             Properties properties
@@ -157,7 +178,7 @@ public class Main {
 
             if (option == 2) {
                 createDatabase(dbName, ds, properties);
-                try (HikariDataSource soDs = dataSourceFactory(input.ipPort, dbName, input.user, input.password )) {
+                try (HikariDataSource soDs = dataSourceFactory(input.type, input.ipPort, dbName, input.user, input.password )) {
                     initTypes(soDs);
                     initColumns(soDs);
                 }
@@ -327,20 +348,38 @@ public class Main {
     }
 
     // Factory for HikariDataSource so i don't have to make it every second
-    private static HikariDataSource dataSourceFactory(String ipPort, String dbName, String psqlName, String psqlPassword){
-        HikariConfig cfg = new HikariConfig();
-        cfg.setJdbcUrl("jdbc:postgresql://" + ipPort + "/" + dbName);
-        cfg.setUsername(psqlName);
-        cfg.setPassword(psqlPassword);
+    private static HikariDataSource dataSourceFactory(String type, String ipPort, String dbName, String psqlName, String psqlPassword){
+        if (type.equals("sqlite")) {
+            HikariConfig cfg = new HikariConfig();
+            cfg.setJdbcUrl("jdbc:sqlite:" + dbName + ".db");
 
-        cfg.setMaximumPoolSize(10);
-        cfg.setMinimumIdle(2);
-        cfg.setPoolName("app-pool");
-        cfg.addDataSourceProperty("cachePrepStmts", "true");
-        cfg.addDataSourceProperty("prepStmtCacheSize", "250");
-        cfg.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+            cfg.setMaximumPoolSize(1);
+            cfg.setMinimumIdle(1);
+            cfg.setConnectionTimeout(10000);
+            cfg.setIdleTimeout(300000);
+            cfg.setPoolName("app-pool");
 
-        return new HikariDataSource(cfg);
+            cfg.addDataSourceProperty("journal_mode", "WAL");
+            cfg.addDataSourceProperty("busy_timeout", "5000");
+
+            return new HikariDataSource(cfg);
+        } else if (type.equals("postgresql")) {
+            HikariConfig cfg = new HikariConfig();
+            cfg.setJdbcUrl("jdbc:postgresql://" + ipPort + "/" + dbName);
+            cfg.setUsername(psqlName);
+            cfg.setPassword(psqlPassword);
+
+            cfg.setMaximumPoolSize(10);
+            cfg.setMinimumIdle(2);
+            cfg.setPoolName("app-pool");
+            cfg.addDataSourceProperty("cachePrepStmts", "true");
+            cfg.addDataSourceProperty("prepStmtCacheSize", "250");
+            cfg.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+            return new HikariDataSource(cfg);
+        } else {
+            throw new RuntimeException("Invalid database type: " + type);
+        }
     }
 
     // BufferedReader readLine for easier use
