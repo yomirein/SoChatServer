@@ -1,6 +1,6 @@
 package org.yomirein.sochatserver.friendship;
 
-import org.yomirein.sochatserver.Database;
+import org.yomirein.sochatserver.database.Database;
 import org.yomirein.sochatserver.users.User;
 import org.yomirein.sochatserver.users.UserRepository;
 

@@ -8,27 +8,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.yomirein.sochatserver.Database;
+import org.yomirein.sochatserver.database.Database;
 import org.yomirein.sochatserver.users.User;
 import static org.yomirein.sochatserver.utils.JsonConfig.mapUser;
 
 public class ChatRepository {
 
     public Optional<Chat> findById(Long id) {
-        String sql = 
+        String sql =
             """
-            SELECT 
+            SELECT
               c.id,
               c.type,
               c.title,
               (
-                SELECT COUNT(*) 
-                FROM message m 
-                JOIN chat_participants p ON p.chat_id = m.chat_id 
-                WHERE p.user_id = 56 
-                  AND m.chat_id = c.id 
+                SELECT COUNT(*)
+                FROM message m
+                JOIN chat_participants p ON p.chat_id = m.chat_id
+                WHERE p.user_id = 56
+                  AND m.chat_id = c.id
                   AND m.id > p.last_read_message_id
-              ) AS unread_count 
+              ) AS unread_count
             FROM chat c
             WHERE c.id = ?;
             """;
@@ -285,7 +285,7 @@ public class ChatRepository {
     }
 
     public Optional<SenderKey> findLastSenderKeyByChatAndUser(long chatId, long userId){
-        String sql = 
+        String sql =
             """
             SELECT chat_id, user_id, key_version, chat_key
             FROM chat_sender_keys

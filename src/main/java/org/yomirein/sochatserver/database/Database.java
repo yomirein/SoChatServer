@@ -1,4 +1,4 @@
-package org.yomirein.sochatserver;
+package org.yomirein.sochatserver.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

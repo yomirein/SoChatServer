@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.yomirein.sochatserver.Database;
 import org.yomirein.sochatserver.chats.Participant;
+import org.yomirein.sochatserver.database.Database;
 
 public class MessageRepository {
 

@@ -11,7 +11,8 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yomirein.sochatserver.Database;
+import org.yomirein.sochatserver.database.Database;
+
 import static org.yomirein.sochatserver.utils.JsonConfig.mapUser;
 
 // UserRepository.java, as like other repositories using for talking with database

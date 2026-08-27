@@ -1,7 +1,5 @@
 package org.yomirein.sochatserver.media;
 
-import org.yomirein.sochatserver.Database;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.yomirein.sochatserver.database.Database;
 
 
 public class MediaRepository {

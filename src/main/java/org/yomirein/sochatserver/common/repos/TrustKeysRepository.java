@@ -1,12 +1,12 @@
 package org.yomirein.sochatserver.common.repos;
 
-import org.yomirein.sochatserver.Database;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import org.yomirein.sochatserver.database.Database;
 
 public class TrustKeysRepository {
 
